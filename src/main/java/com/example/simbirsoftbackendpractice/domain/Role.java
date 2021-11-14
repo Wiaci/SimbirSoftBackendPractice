@@ -13,7 +13,7 @@ public class Role {
     @Id
     private Long id;
 
-    private String name;
+    private RoleEnum role;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();

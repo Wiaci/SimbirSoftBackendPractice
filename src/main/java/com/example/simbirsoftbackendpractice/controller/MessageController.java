@@ -1,6 +1,7 @@
 package com.example.simbirsoftbackendpractice.controller;
 
 import com.example.simbirsoftbackendpractice.domain.Message;
+import com.example.simbirsoftbackendpractice.exception.NoRightException;
 import com.example.simbirsoftbackendpractice.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,14 +21,22 @@ public class MessageController {
     }
 
     @PostMapping("/message/new")
-    public String addMessage(@RequestBody Message message, Model model) {
-        messageService.addMessage(message);
+    public String addMessage(@RequestBody Message message, @RequestBody Long authorId, Model model) {
+        try {
+            messageService.addMessage(message, authorId);
+        } catch (NoRightException e) {
+            System.out.println("There will be an error handle");
+        }
         return "";
     }
 
     @DeleteMapping("/message/{id}")
-    public String deleteMessage(@PathVariable("id") Long id, Model model) {
-        messageService.deleteMessage(id);
+    public String deleteMessage(@PathVariable("id") Long id, @RequestBody Long doerId, Model model) {
+        try {
+            messageService.deleteMessage(id, doerId);
+        } catch (NoRightException e) {
+            System.out.println("There will be an error handle");
+        }
         return "";
     }
 }

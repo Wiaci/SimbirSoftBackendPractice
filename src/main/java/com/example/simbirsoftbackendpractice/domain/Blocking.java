@@ -8,6 +8,14 @@ import java.util.Date;
 @Entity
 public class Blocking {
 
+    public Blocking() {}
+
+    public Blocking(User user, Date unblockDate) {
+        this.user = user;
+        this.unblockDate = unblockDate;
+        this.blockDate = new Date();
+    }
+
     @Id
     private Long id;
 
