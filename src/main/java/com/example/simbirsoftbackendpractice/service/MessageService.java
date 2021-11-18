@@ -11,7 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -23,14 +23,15 @@ public class MessageService {
     private MessageRepo messageRepo;
 
     @Autowired
-    UserRepo userRepo;
+    private UserService userService;
 
+    @Transactional(readOnly = true)
     public Message getMessage(Long id) {
         return messageRepo.getById(id);
     }
 
     public void addMessage(Message message, Long authorId) throws NoRightException {
-        if (isBlocked(authorId)) {
+        if (userService.isBlocked(authorId)) {
             throw new NoRightException();
         }
         messageRepo.save(message);
@@ -38,21 +39,10 @@ public class MessageService {
     }
 
     public void deleteMessage(Long id, Long doerId) throws NoRightException {
-        if (checkRole(doerId, RoleEnum.USER) || isBlocked(doerId)) {
+        if (userService.checkRole(doerId, RoleEnum.USER) || userService.isBlocked(doerId)) {
             throw new NoRightException();
         }
         messageRepo.deleteById(id);
         logger.info("Message with id=" + id + " deleted by user with id=" + doerId);
-    }
-
-    private boolean isBlocked(Long id) {
-        User user = userRepo.getById(id);
-        Blocking blocking = user.getBlocking();
-        return blocking != null;
-    }
-
-    private boolean checkRole(Long id, RoleEnum role) {
-        User doer = userRepo.getById(id);
-        return doer.getRole().getRole() == role;
     }
 }

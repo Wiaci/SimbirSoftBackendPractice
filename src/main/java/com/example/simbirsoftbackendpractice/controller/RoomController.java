@@ -16,59 +16,61 @@ public class RoomController {
 
     @GetMapping("/room/{id}")
     public String getRoom(@PathVariable("id") Long id, Model model) {
-        roomService.getRoom(id);
-        return "";
+        Room room = roomService.getRoom(id);
+        model.addAttribute("name", room.getName());
+        model.addAttribute("roomType", room.getRoomType().getName());
+        return "index";
     }
 
     @PostMapping("/room/create")
-    public String createRoom(@RequestBody Room room, @RequestBody Long creatorId, Model model) {
+    public String createRoom(@RequestParam Room room, @RequestParam Long creatorId, Model model) {
         try {
             roomService.createRoom(room, creatorId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/{id}")
     public String updateRoomName(@PathVariable Long id,
-                                 @RequestBody String name,
-                                 @RequestBody Long doerId, Model model) {
+                                 @RequestParam String name,
+                                 @RequestParam Long doerId, Model model) {
         try {
             roomService.updateRoomName(id, name, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @DeleteMapping("/room/{id}")
     public String removeRoom(@PathVariable("id") Long id, Model model) {
         roomService.removeRoom(id);
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/add/{roomId}/{userId}")
     public String addUserInRoom(@PathVariable("roomId") Long roomId,
                                 @PathVariable("userId") Long userId,
-                                @RequestBody Long doerId, Model model) {
+                                @RequestParam Long doerId, Model model) {
         try {
             roomService.addUserInRoom(roomId, userId, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/delete/{roomId}/{userId}")
     public String deleteUserFromRoom(@PathVariable("roomId") Long roomId,
                                      @PathVariable("userId") Long userId,
-                                     @RequestBody Long doerId, Model model) {
+                                     @RequestParam Long doerId, Model model) {
         try {
             roomService.deleteUserFromRoom(roomId, userId, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 }

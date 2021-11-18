@@ -1,6 +1,5 @@
 package com.example.simbirsoftbackendpractice.controller;
 
-import com.example.simbirsoftbackendpractice.domain.Role;
 import com.example.simbirsoftbackendpractice.domain.User;
 import com.example.simbirsoftbackendpractice.exception.NoRightException;
 import com.example.simbirsoftbackendpractice.service.UserService;
@@ -20,65 +19,71 @@ public class UserController {
     @GetMapping("/room/{id}")
     public String getUser(@PathVariable("id") Long id, Model model) {
         User user = userService.getUser(id);
-        return "";
+        model.addAttribute("name", user.getName());
+        model.addAttribute("role", user.getRole().getRole());
+        return "index";
     }
 
     @PostMapping("/room/add")
-    public String addUser(@RequestBody User user, Model model) {
+    public String addUser(@RequestParam User user, Model model) {
         userService.addUser(user);
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/change_name/{id}")
-    public String updateUserName(@PathVariable Long id, @RequestBody String name, Model model) {
+    public String updateUserName(@PathVariable Long id,
+                                 @RequestParam String name, Model model) {
         userService.updateUserName(id, name);
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/upgradeToModerator/{id}")
-    public String upgradeToModerator(@PathVariable Long id, @RequestBody Long doerId, Model model) {
+    public String upgradeToModerator(@PathVariable Long id,
+                                     @RequestParam Long doerId, Model model) {
         try {
             userService.upgradeToModerator(id, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/downgradeToSimpleUser/{id}")
-    public String downgradeToSimpleUser(@PathVariable Long id, @RequestBody Long doerId, Model model) {
+    public String downgradeToSimpleUser(@PathVariable Long id,
+                                        @RequestParam Long doerId, Model model) {
         try {
             userService.downgradeToSimpleUser(id, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @DeleteMapping("/room/{id}")
     public String removeUser(@PathVariable("id") Long id, Model model) {
         userService.removeUser(id);
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/block/{id}")
-    public String blockUser(@PathVariable("id") Long id, @RequestBody Date unblockDate,
-                            @RequestBody Long doerId, Model model) {
+    public String blockUser(@PathVariable("id") Long id, @RequestParam Date unblockDate,
+                            @RequestParam Long doerId, Model model) {
         try {
             userService.blockUser(id, unblockDate, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @PutMapping("/room/unblock/{id}")
-    public String unblockUser(@PathVariable("id") Long id, @RequestBody Long doerId, Model model) {
+    public String unblockUser(@PathVariable("id") Long id,
+                              @RequestParam Long doerId, Model model) {
         try {
             userService.unblockUser(id, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 }

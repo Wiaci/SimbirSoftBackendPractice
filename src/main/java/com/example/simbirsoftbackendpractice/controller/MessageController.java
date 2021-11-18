@@ -17,26 +17,27 @@ public class MessageController {
     @GetMapping("/message/{id}")
     public String getMessage(@PathVariable("id") Long id, Model model) {
         Message message = messageService.getMessage(id);
-        return "";
+        model.addAttribute(message);
+        return "index";
     }
 
     @PostMapping("/message/new")
-    public String addMessage(@RequestBody Message message, @RequestBody Long authorId, Model model) {
+    public String addMessage(@RequestParam Message message, @RequestParam Long authorId, Model model) {
         try {
             messageService.addMessage(message, authorId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 
     @DeleteMapping("/message/{id}")
-    public String deleteMessage(@PathVariable("id") Long id, @RequestBody Long doerId, Model model) {
+    public String deleteMessage(@PathVariable("id") Long id, @RequestParam Long doerId, Model model) {
         try {
             messageService.deleteMessage(id, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
-        return "";
+        return "index";
     }
 }

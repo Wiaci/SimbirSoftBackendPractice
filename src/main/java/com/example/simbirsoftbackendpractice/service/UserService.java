@@ -12,7 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 
 @Service
@@ -22,14 +22,15 @@ public class UserService {
     private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
     @Autowired
-    BlockingRepo blockingRepo;
+    private BlockingRepo blockingRepo;
 
     @Autowired
-    RoleRepo roleRepo;
+    private RoleRepo roleRepo;
 
+    @Transactional(readOnly = true)
     public User getUser(Long id) {
         return userRepo.getById(id);
     }
@@ -86,8 +87,14 @@ public class UserService {
         logger.info("User with id=" + id + " now is a simple user");
     }
 
-    private boolean checkRole(Long doerId, RoleEnum role) {
-        User doer = userRepo.getById(doerId);
+    public boolean checkRole(Long id, RoleEnum role) {
+        User doer = userRepo.getById(id);
         return doer.getRole().getRole() == role;
+    }
+
+    public boolean isBlocked(Long id) {
+        User user = userRepo.getById(id);
+        Blocking blocking = user.getBlocking();
+        return blocking != null;
     }
 }
