@@ -8,9 +8,9 @@ insert into role values (1, 'USER'), (2, 'MODERATOR'),
 
 create table if not exists usr (
     id int primary key,
-    login varchar(50) not null,
+    login varchar(50) unique not null,
     password text not null,
-    name varchar(50) not null,
+    name varchar(50) unique not null,
     role_id int not null references role
         on delete restrict on update cascade
 );
@@ -40,7 +40,7 @@ insert into room_type values (1, 'PUBLIC', 100),
 
 create table if not exists room (
     id int primary key,
-    name varchar(50) not null,
+    name varchar(50) unique not null,
     owner_id int references usr
         on delete set null on update cascade,
     room_type_id int not null references room_type

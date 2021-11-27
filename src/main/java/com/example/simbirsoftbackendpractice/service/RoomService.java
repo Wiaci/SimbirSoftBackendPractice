@@ -51,7 +51,12 @@ public class RoomService {
         logger.info("Room with id=" + roomId + " updated its name");
     }
 
-    public void removeRoom(Long id) {
+    public void removeRoom(Long id, Long doerId) throws NoRightException {
+        Room room = roomRepo.getById(id);
+        if (!room.getOwner().equals(userRepo.getById(doerId)) ||
+                !userService.checkRole(doerId, RoleEnum.ADMINISTRATOR)) {
+            throw new NoRightException();
+        }
         roomRepo.deleteById(id);
         logger.info("Room with id=" + id + " deleted");
     }

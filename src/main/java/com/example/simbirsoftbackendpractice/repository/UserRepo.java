@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
+    User getUserByLogin(String login);
 
     @Modifying
     @Query("update User set name = ?2 where id = ?1")

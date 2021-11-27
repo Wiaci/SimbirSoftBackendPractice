@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoomRepo extends JpaRepository<Room, Long> {
+    void deleteByName(String name);
+    Room getByName(String name);
 
     @Modifying
     @Query("update Room set name=?2 where id=?1")

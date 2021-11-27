@@ -45,8 +45,12 @@ public class RoomController {
     }
 
     @DeleteMapping("/room/{id}")
-    public String removeRoom(@PathVariable("id") Long id, Model model) {
-        roomService.removeRoom(id);
+    public String removeRoom(@PathVariable("id") Long id, @RequestParam Long doerId, Model model) {
+        try {
+            roomService.removeRoom(id, doerId);
+        } catch (NoRightException e) {
+            System.out.println("There will be an error handle");
+        }
         return "index";
     }
 
