@@ -9,6 +9,8 @@ import com.example.simbirsoftbackendpractice.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class ChatBotService {
 
@@ -16,6 +18,9 @@ public class ChatBotService {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepo userRepo;
@@ -46,6 +51,16 @@ public class ChatBotService {
             case "rename": return executeRoomRenameCommand(command, user_id);
             case "connect": return executeRoomConnectCommand(command, user_id);
             case "disconnect": return executeRoomDisconnectCommand(command, user_id);
+            default: return INVALID_SYNTAX;
+        }
+    }
+
+    private String executeUserCommand(String[] command, Long user_id) throws NoRightException {
+        if (command.length < 2) return INVALID_SYNTAX;
+        switch (command[1]) {
+            case "rename": return executeUserRenameCommand(command, user_id);
+            case "ban": return executeUserBanCommand(command, user_id);
+            case "moderator": return executeUserModeratorCommand(command, user_id);
             default: return INVALID_SYNTAX;
         }
     }
@@ -97,33 +112,54 @@ public class ChatBotService {
         return INVALID_SYNTAX;
     }
 
-    private String executeRoomDisconnectCommand(String[] command, Long user_id) {
-        if (command.length == 2) {
-
+    private String executeRoomDisconnectCommand(String[] command, Long user_id) throws NoRightException {
+        if (command.length == 3) {
+            Room room = roomRepo.getByName(command[2]);
+            roomService.deleteUserFromRoom(room.getId(), user_id, user_id);
+            return "User deleted";
         }
-        return "OK";
-    }
-
-    private String executeUserCommand(String[] command, Long user_id) {
-        if (command.length < 2) return INVALID_SYNTAX;
-        switch (command[1]) {
-            case "rename": return executeUserRenameCommand(command, user_id);
-            case "ban": return executeUserBanCommand(command, user_id);
-            case "moderator": return executeUserModeratorCommand(command, user_id);
-            default: return INVALID_SYNTAX;
+        if (command.length == 5 && command[3].equals("-l")) {
+            User user = userRepo.getUserByLogin(command[4]);
+            Room room = roomRepo.getByName(command[2]);
+            roomService.deleteUserFromRoom(room.getId(), user.getId(), user_id);
+            return "User is added";
         }
+        return INVALID_SYNTAX;
     }
 
-    private String executeUserRenameCommand(String[] command, Long user_id) {
-        return "OK";
+    private String executeUserRenameCommand(String[] command, Long user_id) throws NoRightException {
+        if (command.length == 4) {
+            User user = userRepo.getUserByLogin(command[2]);
+            if (Objects.equals(user_id, user.getId())) {
+                userService.updateUserName(user.getId(), command[3]);
+                return "User renamed";
+            } else throw new NoRightException();
+        }
+        return INVALID_SYNTAX;
     }
 
-    private String executeUserBanCommand(String[] command, Long user_id) {
-        return "OK";
+    private String executeUserBanCommand(String[] command, Long user_id) throws NoRightException {
+        if (command.length == 6 && command[2].equals("-l") && command[4].equals("-m")
+            && command[5].matches("^\\d+$")) {
+            int minutes = Integer.parseInt(command[5]);
+            User user = userRepo.getUserByLogin(command[3]);
+            userService.blockUser(user.getId(), minutes, user_id);
+        }
+        return INVALID_SYNTAX;
     }
 
-    private String executeUserModeratorCommand(String[] command, Long user_id) {
-        return "OK";
+    private String executeUserModeratorCommand(String[] command, Long user_id) throws NoRightException {
+        if (command.length == 4) {
+            String login = command[2];
+            User user = userRepo.getUserByLogin(login);
+            if (command[3].equals("-n")) {
+                userService.upgradeToModerator(user.getId(), user_id);
+            }
+            if (command[3].equals("-d")) {
+                userService.downgradeToSimpleUser(user.getId(), user_id);
+            }
+        }
+        return INVALID_SYNTAX;
     }
 
     private String executeYBotCommand(String[] command, Long user_id) {

@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Service
@@ -50,14 +52,14 @@ public class UserService {
         logger.info("User with id=" + id + " deleted");
     }
 
-    public void blockUser(Long id, Date unblockDate, Long doerId) throws NoRightException {
+    public void blockUser(Long id, int minutes, Long doerId) throws NoRightException {
         if (checkRole(doerId, RoleEnum.USER)) {
             throw new NoRightException();
         }
         User user = userRepo.getById(id);
-        Blocking blocking = new Blocking(user, unblockDate);
+        Blocking blocking = new Blocking(user, minutes);
         blockingRepo.save(blocking);
-        logger.info("User with id=" + id + " is blocked until" + unblockDate);
+        logger.info("User with id=" + id + " is blocked until" + blocking.getUnblockDate());
     }
 
     public void unblockUser(Long id, Long doerId) throws NoRightException {

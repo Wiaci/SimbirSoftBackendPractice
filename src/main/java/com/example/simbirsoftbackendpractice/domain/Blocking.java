@@ -2,6 +2,7 @@ package com.example.simbirsoftbackendpractice.domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
@@ -10,10 +11,11 @@ public class Blocking {
 
     public Blocking() {}
 
-    public Blocking(User user, Date unblockDate) {
+    public Blocking(User user, int minutes) {
         this.user = user;
-        this.unblockDate = unblockDate;
-        this.blockDate = new Date();
+        blockDate = ZonedDateTime.now();
+        unblockDate = ZonedDateTime.now();
+        unblockDate.plusMinutes(minutes);
     }
 
     @Id
@@ -24,9 +26,9 @@ public class Blocking {
     private User user;
 
     @Column(name = "block_date")
-    private Date blockDate;
+    private ZonedDateTime blockDate;
 
     @Column(name = "unblock_date")
-    private Date unblockDate;
+    private ZonedDateTime unblockDate;
 
 }

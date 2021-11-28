@@ -66,10 +66,10 @@ public class UserController {
     }
 
     @PutMapping("/room/block/{id}")
-    public String blockUser(@PathVariable("id") Long id, @RequestParam Date unblockDate,
+    public String blockUser(@PathVariable("id") Long id, @RequestParam int minutes,
                             @RequestParam Long doerId, Model model) {
         try {
-            userService.blockUser(id, unblockDate, doerId);
+            userService.blockUser(id, minutes, doerId);
         } catch (NoRightException e) {
             System.out.println("There will be an error handle");
         }
